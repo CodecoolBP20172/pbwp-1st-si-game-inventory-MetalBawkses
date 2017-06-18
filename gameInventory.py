@@ -5,6 +5,7 @@ from collections import Counter
 from operator import itemgetter
 from itertools import count
 import csv
+import sys
 
 
 # Displays the inventory.
@@ -44,8 +45,12 @@ def print_table(inventory, order):
 
     maxkeylenght = 13
     for key in inventory.keys():
+        inventory[key.replace("\t", " ")] = inventory.pop(key)  # replaces the tabs with a whitespace
+    print(inventory)
+    for key in inventory.keys():
         if len(key) > maxkeylenght:
             maxkeylenght = len(key)
+    print(maxkeylenght)
     maxvallenght = 6
     for value in inventory.values():
         if len(str(value)) > maxvallenght:
@@ -78,6 +83,8 @@ def print_table(inventory, order):
 # "import_inventory.csv". The import automatically merges items by name.
 # The file format is plain text with comma separated values (CSV).
 def import_inventory(inventory, filename):
+    if filename is None:
+        filename = "import_inventory.csv"
     with open(filename, mode='r') as invfile:
         reader = csv.reader(invfile, delimiter=',')
         # mydict = {rows[0]: rows[1] for rows in reader}
@@ -103,15 +110,66 @@ def import_inventory(inventory, filename):
 # called "export_inventory.csv". The file format is the same plain text
 # with comma separated values (CSV).
 def export_inventory(inventory, filename):
+    if filename is None:
+        filename = "export_inventory.csv"
     with open(filename, 'w') as expfile:
         explist = []
         for key, value in inventory.items():
             explist.append([key] * value)
         print(explist)
-        lofasz = []
+        finalexpinv = []
         for i in range(len(explist)):
-            lofasz = lofasz + explist[i]
-        # print(lofasz)
+            finalexpinv = finalexpinv + explist[i]
+        print(finalexpinv)
 
         writer = csv.writer(expfile)
-        writer.writerow(lofasz)
+        writer.writerow(finalexpinv)
+
+
+if len(sys.argv) > 1:
+    sysarg = str(sys.argv[1])
+else:
+    sysarg = None
+
+print(sysarg)
+
+
+inv = {'rope': 1, 'torch': 6, 'gold coin': 42, 'dagger': 1, 'arrow': 12}
+
+display_inventory(inv)
+dragon_loot = ['gold coin', 'dagger', 'gold coin', 'gold coin', 'ruby']
+inv = add_to_inventory(inv, dragon_loot)
+
+display_inventory(inv)
+print_table(inv, None)
+inv = import_inventory(inv, sysarg)
+
+
+print_table(inv, "count,desc")
+
+#export_inventory(inv, sysarg)
+
+# a = "                        aaaaaaaaaaaaaaaaaaaaaa              aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaxe"
+# print("a x", a)
+# print(a.count(" "))
+# print(len(a))
+
+# filename = "import_inventory.csv"
+# with open(filename, mode='r') as invfile:
+#     reader = csv.reader(invfile, delimiter=',')
+#     # mydict = {rows[0]: rows[1] for rows in reader}
+#     csvinv = list(reader)
+#     print(csvinv)
+#     print(len(csvinv))
+#     row = []
+#     for i in range(0, len(csvinv)):
+#         row = row + csvinv[i]
+#     print(row)
+#     print(row[5])
+#     print(len(row[5]))
+#     print((row[5]).count("\t"))
+#     print(row[5].replace("\t", " "))
+#     print(len(row[5].replace("\t", " ")))
+
+# mydict = {"keylofaszt": 5}
+# print(len(str(list(mydict.keys()))))
